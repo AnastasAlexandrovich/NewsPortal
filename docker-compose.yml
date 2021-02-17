@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:13-alpine
+    environment:
+      - POSTGRES_DB=newsportal
+      - POSTGRES_USER=portaladmin
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=newsportal
+      - DB_USER=portaladmin
+      - DB_PASS=postgres
+    depends_on:
+      - db
+volumes:
+  db-volume:

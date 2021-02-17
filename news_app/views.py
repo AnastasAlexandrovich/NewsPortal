@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Item, User, Comment
-from .permissions import IsBunned
+from .permissions import IsNotBunned
 from .serializers import ItemSerializer, UserSerializer, CommentSerializer, ItemForViewSerializer, \
     CommentForViewSerializer
 from rest_framework import generics, status
@@ -55,7 +55,7 @@ class ItemDeleteView(generics.DestroyAPIView):
 class CommentCreateView(generics.CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated, IsBunned]
+    permission_classes = [IsAuthenticated, IsNotBunned]
 
     def perform_create(self, serializer):
         try:
@@ -140,3 +140,16 @@ def answer_comment(request):
     except ObjectDoesNotExist:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['POST'])
+def create_superuser(request):
+    email = request.data['email']
+    password = request.data['password']
+
+    user = User.objects.create_superuser(
+        email=email,
+        password=password
+    )
+
+    user.save()
+    return Response({'message': 'superuser is created'})

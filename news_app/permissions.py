@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
 
-class IsBunned(permissions.BasePermission):
+class IsNotBunned(permissions.BasePermission):
     def has_permission(self, request, view):
         return not request.user.is_banned
